@@ -434,7 +434,7 @@ public class DiffUtils {
 	 *            The filename as path.
 	 * @return A list of lines.
 	 */
-	private static List<String> fileToLines(String filename) {
+	public static List<String> fileToLines(String filename) {
 		List<String> lines = new LinkedList<String>();
 		String line = "";
 		BufferedReader in = null;
