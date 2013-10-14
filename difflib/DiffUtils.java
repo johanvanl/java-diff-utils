@@ -15,11 +15,11 @@
  */
 package difflib;
 
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 
 import difflib.myers.Equalizer;
 import difflib.myers.MyersDiff;
-
 
 /**
  * Implements the difference and patching engine
@@ -426,7 +425,13 @@ public class DiffUtils {
 		}
 		return buffer;
 	}
-	
+
+	public static List<String> stringToLines(String text) {
+		String[] arr = text.split("\\r?\\n");
+		List<String> out = Arrays.asList(arr);
+		return out;
+	}
+
 	/**
 	 * Tries to read the file and split it into a list of lines.
 	 * 
@@ -460,8 +465,10 @@ public class DiffUtils {
 
 	/**
 	 * 
-	 * @param original The path to the original file.
-	 * @param revised The path to the revised file.
+	 * @param original
+	 *            The path to the original file.
+	 * @param revised
+	 *            The path to the revised file.
 	 * @return
 	 */
 	public static String unifiedDiff(String original, String revised) {
@@ -471,8 +478,8 @@ public class DiffUtils {
 		// Compute diff. Get the Patch object. Patch is the container for
 		// computed deltas.
 		Patch<String> patch = DiffUtils.diff(original_list, revised_list);
-		List<String> udiff = DiffUtils.generateUnifiedDiff(original,
-				revised, original_list, patch, 10);
+		List<String> udiff = DiffUtils.generateUnifiedDiff(original, revised,
+				original_list, patch, 10);
 		StringBuilder out = new StringBuilder();
 		for (String o : udiff) {
 			out.append(o);
@@ -484,25 +491,28 @@ public class DiffUtils {
 		return out.toString();
 	}
 
-	public static List<List<String>> getSideBySide(String original, String revised) {
-		List<String> original_list = fileToLines(original);
-		List<String> revised_list = fileToLines(revised);
-
+	public static List<List<String>> getSideBySide(List<String> original,
+			List<String> revised) {
 		DiffRowGenerator.Builder builder = new DiffRowGenerator.Builder();
 		builder.showInlineDiffs(false);
 		builder.ignoreWhiteSpaces(true);
 		DiffRowGenerator generator = builder.build();
-		
-		List<DiffRow> rows = generator.generateDiffRows(original_list,
-				revised_list);
-		
-		List<List<String>> sbs  = new ArrayList<List<String>>();
-		
-		for (DiffRow row : rows){
+
+		List<DiffRow> rows = generator.generateDiffRows(original, revised);
+
+		List<List<String>> sbs = new ArrayList<List<String>>();
+
+		for (DiffRow row : rows) {
 			sbs.add(row.getList());
 		}
 		return sbs;
+	}
 
+	public static List<List<String>> getSideBySide(String original,
+			String revised) {
+		List<String> original_list = fileToLines(original);
+		List<String> revised_list = fileToLines(revised);
+		return getSideBySide(original_list, revised_list);
 	}
 
 }
